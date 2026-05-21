@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+.chrome-user-data
 
 # debug
 npm-debug.log*

@@ -1,11 +1,10 @@
-import { createAnonServerClient } from '@/lib/supabase/server';
+import { isSupabaseConfigured, createAnonServerClient } from '@/lib/supabase/server';
 import type { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createAnonServerClient();
   const baseUrl = 'https://unresolved.in';
 
-  // Static routes
+  // Static routes — always available
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'hourly', priority: 1 },
     { url: `${baseUrl}/file-complaint`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
@@ -13,6 +12,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/search`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
     { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
+
+  // Dynamic routes — only when Supabase is configured
+  if (!isSupabaseConfigured()) {
+    return staticRoutes;
+  }
+
+  const supabase = createAnonServerClient();
 
   // Company pages
   const { data: companies } = await supabase

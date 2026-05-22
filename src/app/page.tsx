@@ -215,18 +215,6 @@ export default function HomePage() {
 
                 {HOW_IT_WORKS.map((step, i) => (
                   <div key={i} className="text-center relative">
-                    {/* Ghost step number */}
-                    <div
-                      className="absolute -top-2 left-1/2 -translate-x-1/2 text-[64px] font-extrabold leading-none pointer-events-none select-none"
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        color: 'var(--color-surface-2)',
-                        WebkitTextStroke: '1px var(--color-border)',
-                        opacity: 0.5,
-                      }}
-                    >
-                      {step.step}
-                    </div>
                     <div
                       className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center relative z-10 border-2"
                       style={{

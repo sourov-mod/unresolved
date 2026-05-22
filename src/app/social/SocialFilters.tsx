@@ -111,7 +111,7 @@ export default function SocialFilters({ initialComplaints }: SocialFiltersProps)
                   <p className="text-xs text-[var(--color-text-muted)]">{twitterPosts.length} complaints</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start card-grid">
                 {twitterPosts.map(post => (
                   <SocialComplaintCard key={post.id} post={post} />
                 ))}
@@ -133,7 +133,7 @@ export default function SocialFilters({ initialComplaints }: SocialFiltersProps)
                   <p className="text-xs text-[var(--color-text-muted)]">{fbPosts.length} complaints</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start card-grid">
                 {fbPosts.map(post => (
                   <SocialComplaintCard key={post.id} post={post} />
                 ))}
@@ -155,7 +155,7 @@ export default function SocialFilters({ initialComplaints }: SocialFiltersProps)
                   <p className="text-xs text-[var(--color-text-muted)]">{instaPosts.length} complaints</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start card-grid">
                 {instaPosts.map(post => (
                   <SocialComplaintCard key={post.id} post={post} />
                 ))}
@@ -177,7 +177,7 @@ export default function SocialFilters({ initialComplaints }: SocialFiltersProps)
                   <p className="text-xs text-[var(--color-text-muted)]">{webPosts.length} complaints</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start card-grid">
                 {webPosts.map(post => (
                   <SocialComplaintCard key={post.id} post={post} />
                 ))}

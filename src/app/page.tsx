@@ -79,18 +79,18 @@ export default function HomePage() {
                   India&apos;s Public Consumer Complaint Registry
                 </div>
                 <h1
-                  className="text-5xl md:text-7xl lg:text-[80px] font-extrabold leading-[1.05] mb-6"
+                  className="text-5xl md:text-7xl lg:text-[80px] font-extrabold leading-[1.05] mb-6 hero-animate-title"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   Unresolved Issue?
                   <br />
                   <span className="text-[var(--color-primary)]">Bring It to Light.</span>
                 </h1>
-                <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-xl mb-8 leading-relaxed">
+                <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-xl mb-8 leading-relaxed hero-animate-subtitle">
                   Document your complaint. Get a tracking token. Receive email updates.
                   No login. No signup. Just transparency.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row gap-4 mb-8 hero-animate-buttons">
                   <Link href="/file-complaint" className="btn-primary text-base py-3.5 px-8 hero-cta-pulse">
                     <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4" />
                     File a Complaint
@@ -102,7 +102,7 @@ export default function HomePage() {
                   </Link>
                 </div>
                 {/* Trust micro-stats bar */}
-                <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-secondary)]">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-secondary)] hero-animate-trust">
                   <span className="flex items-center gap-1.5">
                     <FontAwesomeIcon icon={faShield} className="w-3.5 h-3.5 text-[var(--color-primary)]" />
                     4,45,960+ Complaints Documented
@@ -181,7 +181,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start card-grid">
               {SOCIAL_COMPLAINTS.slice(0, 9).map(post => (
                 <SocialComplaintCard key={post.id} post={post} />
               ))}
@@ -251,7 +251,7 @@ export default function HomePage() {
             <p className="text-center text-[var(--color-text-secondary)] mb-12">
               Find complaints in your industry
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 card-grid">
               {CATEGORIES.map(cat => (
                 <Link
                   key={cat.slug}

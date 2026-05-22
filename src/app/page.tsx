@@ -209,10 +209,7 @@ export default function HomePage() {
               <p className="text-center text-[var(--color-text-secondary)] mb-14 max-w-lg mx-auto">
                 Four simple steps to document and track your complaint.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-                {/* Connector line — desktop only */}
-                <div className="hidden lg:block absolute top-12 left-[12.5%] right-[12.5%] h-[2px] border-t-2 border-dashed border-[var(--color-border)]" />
-
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {HOW_IT_WORKS.map((step, i) => (
                   <div key={i} className="text-center relative">
                     <div

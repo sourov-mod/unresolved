@@ -201,25 +201,30 @@ export default async function ComplaintPage({ params }: Props) {
 }
 
 function ShareButtons({ companyName, title, complaintId }: { companyName: string; title: string; complaintId: string }) {
+  const shareUrl = `https://unresolved.in/complaint/${complaintId}`;
+  const twitterText = `Complaint against ${companyName}: "${title}" — filed on @unresolvedin`;
+  const waText = `I filed a complaint against ${companyName} on Unresolved — India's public complaint registry.\n\n"${title}"\n\nCheck it out: ${shareUrl}`;
+
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap">
       <a
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Complaint against ${companyName}: ${title}`)}&url=${encodeURIComponent(`https://unresolved.in/complaint/${complaintId}`)}`}
+        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn-outline py-2 px-4 text-xs"
+        className="inline-flex items-center gap-2 py-2.5 px-5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.03] bg-[#0f1419] text-white"
       >
-        <FontAwesomeIcon icon={faTwitter} className="w-3.5 h-3.5" />
+        <FontAwesomeIcon icon={faTwitter} className="w-4 h-4" />
         Share on 𝕏
       </a>
       <a
-        href={`https://wa.me/?text=${encodeURIComponent(`Check this complaint against ${companyName}: https://unresolved.in/complaint/${complaintId}`)}`}
+        href={`https://wa.me/?text=${encodeURIComponent(waText)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn-outline py-2 px-4 text-xs"
+        className="inline-flex items-center gap-2 py-2.5 px-5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.03] text-white"
+        style={{ backgroundColor: '#25D366' }}
       >
-        <FontAwesomeIcon icon={faWhatsapp} className="w-3.5 h-3.5" />
-        WhatsApp
+        <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4" />
+        Share on WhatsApp
       </a>
     </div>
   );

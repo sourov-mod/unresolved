@@ -18,7 +18,7 @@ import {
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import toast from 'react-hot-toast';
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4;
 
 /* ============================================================
    STEP GUIDE DATA — right-side contextual tips per step
@@ -37,8 +37,8 @@ interface StepGuide {
 
 const STEP_GUIDES: Record<Step, StepGuide> = {
   1: {
-    heading: 'Before You Start',
-    subtitle: 'Important things to know',
+    heading: 'Terms & Verification',
+    subtitle: 'Agree and verify your identity',
     tips: [
       {
         icon: faCircleInfo,
@@ -47,34 +47,13 @@ const STEP_GUIDES: Record<Step, StepGuide> = {
       },
       {
         icon: faShieldHalved,
-        title: 'We protect your privacy',
-        text: 'Your phone number is never stored. Email is used only for updates. We hash all sensitive data.',
+        title: 'Phone number stays private',
+        text: 'We hash your phone number using SHA-256 immediately. The original number is never stored in our database.',
       },
       {
         icon: faClipboardList,
         title: 'Try the company first',
         text: 'Before filing here, make sure you have already tried contacting the company directly and your issue remains unresolved.',
-      },
-      {
-        icon: faScaleBalanced,
-        title: 'Neutral platform',
-        text: 'We do not take sides. Your complaint is published as-is for public accountability.',
-      },
-    ],
-  },
-  2: {
-    heading: 'Phone Verification',
-    subtitle: 'Why do we verify?',
-    tips: [
-      {
-        icon: faShieldHalved,
-        title: 'Prevents fake complaints',
-        text: 'OTP verification ensures each complaint is filed by a real person, keeping the platform credible.',
-      },
-      {
-        icon: faLock,
-        title: 'Your number stays private',
-        text: 'We hash your phone number using SHA-256 immediately. The original number is never stored in our database.',
       },
       {
         icon: faLightbulb,
@@ -83,7 +62,7 @@ const STEP_GUIDES: Record<Step, StepGuide> = {
       },
     ],
   },
-  3: {
+  2: {
     heading: 'Your Identity',
     subtitle: 'How your info is used',
     tips: [
@@ -104,45 +83,24 @@ const STEP_GUIDES: Record<Step, StepGuide> = {
       },
     ],
   },
-  4: {
-    heading: 'Writing Your Complaint',
-    subtitle: 'Tips for a strong complaint',
+  3: {
+    heading: 'Complaint & Proof',
+    subtitle: 'Be specific and provide evidence',
     tips: [
       {
         icon: faClipboardList,
         title: 'Be specific',
-        text: 'Include dates, order/reference numbers, and the names of people you spoke to. Vague complaints are harder to act on.',
+        text: 'Include dates, order/reference numbers, and the names of people you spoke to.',
       },
       {
         icon: faFileLines,
         title: 'Stick to facts',
-        text: 'Describe what happened objectively. Avoid emotional language or personal attacks — focus on the issue.',
+        text: 'Describe what happened objectively. Avoid emotional language or personal attacks.',
       },
-      {
-        icon: faLightbulb,
-        title: 'Mention what you want',
-        text: 'State your desired resolution clearly: a refund, replacement, apology, or service fix.',
-      },
-      {
-        icon: faTriangleExclamation,
-        title: 'No private data',
-        text: 'Do not include personal employee information, private phone numbers, or confidential business data.',
-      },
-    ],
-  },
-  5: {
-    heading: 'Adding Proof',
-    subtitle: 'Evidence strengthens your case',
-    tips: [
       {
         icon: faCamera,
         title: 'Screenshots help',
         text: 'Upload screenshots of conversations, error messages, or the issue itself. Visual evidence is very persuasive.',
-      },
-      {
-        icon: faFileLines,
-        title: 'Bills and receipts',
-        text: 'Transaction receipts, invoices, or order confirmations prove your purchase and the amount at stake.',
       },
       {
         icon: faLightbulb,
@@ -151,7 +109,7 @@ const STEP_GUIDES: Record<Step, StepGuide> = {
       },
     ],
   },
-  6: {
+  4: {
     heading: 'Final Check',
     subtitle: 'Review before submitting',
     tips: [
@@ -175,12 +133,10 @@ const STEP_GUIDES: Record<Step, StepGuide> = {
 };
 
 const STEP_LABELS: Record<Step, string> = {
-  1: 'Terms',
-  2: 'Verify',
-  3: 'Details',
-  4: 'Complaint',
-  5: 'Proof',
-  6: 'Review',
+  1: 'Terms & Verify',
+  2: 'Details',
+  3: 'Complaint',
+  4: 'Review',
 };
 
 /* ============================================================
@@ -194,7 +150,7 @@ function GuidePanel({ step }: { step: Step }) {
       {/* Step indicator */}
       <div className="mb-6">
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)] mb-1">
-          Step {step} of 6
+          Step {step} of 4
         </p>
         <h3
           className="text-xl font-bold text-[var(--color-text-primary)] mb-1"
@@ -231,7 +187,7 @@ function GuidePanel({ step }: { step: Step }) {
       {/* Progress summary */}
       <div className="mt-8 pt-6 border-t border-[var(--color-border)]">
         <div className="flex items-center gap-2 flex-wrap">
-          {([1, 2, 3, 4, 5, 6] as Step[]).map(s => (
+          {([1, 2, 3, 4] as Step[]).map(s => (
             <div
               key={s}
               className={`guide-step-pill ${
@@ -258,11 +214,10 @@ function GuidePanel({ step }: { step: Step }) {
    MAIN PAGE COMPONENT
    ============================================================ */
 export default function FileComplaintPage() {
-  // Step 1: Disclaimer + T&C
+  // Step 1: Disclaimer + T&C + Phone
   const [agreedTC, setAgreedTC] = useState(false);
   const [agreedDisclaimer, setAgreedDisclaimer] = useState(false);
 
-  // Step 2: Phone
   const [step, setStep] = useState<Step>(1);
   const [phone, setPhone] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -273,20 +228,18 @@ export default function FileComplaintPage() {
   const [resendTimer, setResendTimer] = useState(0);
   const [otpLoading, setOtpLoading] = useState(false);
 
-  // Step 3: Name + Email
+  // Step 2: Name + Email
   const [filerName, setFilerName] = useState('');
   const [filerEmail, setFilerEmail] = useState('');
 
-  // Step 4: Complaint
+  // Step 3: Complaint + Proof
   const [companyName, setCompanyName] = useState('');
   const [category, setCategory] = useState<ComplaintCategory | ''>('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-
-  // Step 5: Proof
   const [proofFiles, setProofFiles] = useState<UploadedFile[]>([]);
 
-  // Step 6: Review + Submit
+  // Step 4: Review + Submit
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [resultToken, setResultToken] = useState('');
@@ -331,7 +284,6 @@ export default function FileComplaintPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setPhoneVerified(true);
-      setStep(3);
       toast.success('Phone verified!');
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Verification failed');
@@ -366,6 +318,9 @@ export default function FileComplaintPage() {
       toast.error(err instanceof Error ? err.message : 'Submission failed');
     } finally { setSubmitting(false); }
   };
+
+  // Determine if Step 1 can proceed
+  const canProceedStep1 = agreedTC && agreedDisclaimer && phoneVerified;
 
   // ===================== SUCCESS SCREEN =====================
   if (submitted) {
@@ -418,6 +373,9 @@ export default function FileComplaintPage() {
     );
   }
 
+  // ===================== PROGRESS BAR =====================
+  const progressPercent = ((step - 1) / 3) * 100;
+
   // ===================== MAIN FORM LAYOUT =====================
   return (
     <>
@@ -434,207 +392,150 @@ export default function FileComplaintPage() {
             </p>
           </div>
 
-          {/* Progress bar — full width */}
-          <div className="flex gap-1.5 mb-10">
-            {([1, 2, 3, 4, 5, 6] as Step[]).map(s => (
-              <div key={s} className="flex-1 flex flex-col items-center gap-1.5">
-                <div
-                  className={`h-1.5 w-full rounded-full transition-all duration-500 ${
-                    s <= step ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border)]'
-                  }`}
-                />
-                <span className={`text-[11px] font-medium hidden sm:block ${
+          {/* Progress bar */}
+          <div className="mb-10">
+            <div className="flex justify-between mb-2">
+              {([1, 2, 3, 4] as Step[]).map(s => (
+                <span key={s} className={`text-[11px] font-medium ${
                   s <= step ? 'text-[var(--color-primary-dark)]' : 'text-[var(--color-text-muted)]'
                 }`}>
                   {STEP_LABELS[s]}
                 </span>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-[var(--color-border)] overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-500 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
 
           {/* Two-column layout */}
           <div className="complaint-layout">
             {/* ======== LEFT COLUMN: FORM ======== */}
             <div className="complaint-form-col">
-              {/* ===== STEP 1: Disclaimer & T&C ===== */}
+              {/* ===== STEP 1: Terms + Verify (merged) ===== */}
               {step === 1 && (
-                <div className="animate-fade-in">
-                  <div className="flex items-center gap-3 mb-5">
+                <div className="animate-fade-in space-y-6">
+                  {/* Section heading */}
+                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-light)] flex items-center justify-center flex-shrink-0">
                       <FontAwesomeIcon icon={faGavel} className="w-5 h-5 text-[var(--color-primary)]" />
                     </div>
                     <div>
                       <h2 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                        Before You Begin
+                        Terms & Verification
                       </h2>
                       <p className="text-sm text-[var(--color-text-muted)]">
-                        Read and agree to continue
+                        Agree to terms and verify your phone
                       </p>
                     </div>
                   </div>
 
                   {/* Disclaimer */}
-                  <div className="card p-5 mb-5 border-l-4 border-l-[var(--color-amber)]" style={{ backgroundColor: 'var(--color-amber-light)' }}>
+                  <div className="card p-5 border-l-4 border-l-[var(--color-amber)]" style={{ backgroundColor: 'var(--color-amber-light)' }}>
                     <div className="flex items-start gap-3">
                       <FontAwesomeIcon icon={faTriangleExclamation} className="w-5 h-5 text-[var(--color-amber)] mt-0.5 flex-shrink-0" />
                       <div className="text-sm">
                         <p className="font-semibold text-[var(--color-text-primary)] mb-2">Important</p>
-                        <ul className="space-y-1.5 text-[var(--color-text-secondary)]">
+                        <ul className="space-y-1 text-[var(--color-text-secondary)]">
                           <li>This platform is for <strong>genuinely unresolved</strong> consumer issues only.</li>
                           <li>Your complaint must be <strong>truthful</strong> and based on <strong>your real experience</strong>.</li>
                           <li>You must have <strong>already attempted</strong> to resolve the issue with the company.</li>
-                          <li><strong>False, defamatory, or malicious</strong> complaints will be removed and may result in a ban.</li>
-                          <li>We are a <strong>neutral platform</strong> — we do not judge companies or take sides.</li>
+                          <li><strong>False or malicious</strong> complaints will be removed and may result in a ban.</li>
                         </ul>
                       </div>
                     </div>
                   </div>
 
-                  {/* T&C summary */}
-                  <div className="card p-5 mb-6 flex items-start gap-3">
-                    <FontAwesomeIcon icon={faScaleBalanced} className="w-5 h-5 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
-                    <div className="text-sm text-[var(--color-text-secondary)]">
-                      <p className="font-semibold text-[var(--color-text-primary)] mb-2">By filing a complaint, you agree that:</p>
-                      <ul className="space-y-1.5">
-                        <li>Your complaint is factual and you accept full responsibility for it.</li>
-                        <li>Your name and complaint will be <strong>publicly visible</strong>.</li>
-                        <li>You will not post private company information, personal employee data, or hate speech.</li>
-                        <li>We may remove content violating our terms without prior notice.</li>
-                        <li>You will provide a valid <strong>email address</strong> to receive complaint updates.</li>
-                      </ul>
-                    </div>
-                  </div>
-
                   {/* Checkboxes */}
-                  <div className="space-y-3 mb-6">
+                  <div className="space-y-3">
                     <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={agreedTC}
-                        onChange={e => setAgreedTC(e.target.checked)}
-                        className="mt-1 w-4 h-4 accent-[var(--color-primary)]"
-                      />
+                      <input type="checkbox" checked={agreedTC} onChange={e => setAgreedTC(e.target.checked)} className="mt-1 w-4 h-4 accent-[var(--color-primary)]" />
                       <span className="text-sm text-[var(--color-text-secondary)]">
-                        I have read and agree to the{' '}
+                        I agree to the{' '}
                         <Link href="/terms" target="_blank" className="text-[var(--color-primary)] underline">Terms & Conditions</Link>
                       </span>
                     </label>
                     <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={agreedDisclaimer}
-                        onChange={e => setAgreedDisclaimer(e.target.checked)}
-                        className="mt-1 w-4 h-4 accent-[var(--color-primary)]"
-                      />
+                      <input type="checkbox" checked={agreedDisclaimer} onChange={e => setAgreedDisclaimer(e.target.checked)} className="mt-1 w-4 h-4 accent-[var(--color-primary)]" />
                       <span className="text-sm text-[var(--color-text-secondary)]">
-                        I have read and understand the{' '}
-                        <Link href="/disclaimer" target="_blank" className="text-[var(--color-primary)] underline">Disclaimer</Link>{' '}
-                        and{' '}
+                        I understand the{' '}
+                        <Link href="/disclaimer" target="_blank" className="text-[var(--color-primary)] underline">Disclaimer</Link>{' '}and{' '}
                         <Link href="/privacy" target="_blank" className="text-[var(--color-primary)] underline">Privacy Policy</Link>
                       </span>
                     </label>
                   </div>
 
+                  {/* Phone verification section — only show if agreed to terms */}
+                  {agreedTC && agreedDisclaimer && (
+                    <div className="card p-5 space-y-4 animate-fade-in">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
+                        <FontAwesomeIcon icon={faLock} className="w-4 h-4 text-[var(--color-primary)]" />
+                        Phone Verification
+                      </div>
+
+                      <div className="flex items-start gap-3 p-3 bg-[var(--color-surface-2)] rounded-xl text-[13px] text-[var(--color-text-secondary)]">
+                        <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5 text-[var(--color-text-muted)] mt-0.5 flex-shrink-0" />
+                        Your phone number is never stored. It&apos;s hashed with SHA-256 immediately.
+                      </div>
+
+                      {!otpSent ? (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-sm font-medium mb-2 block">Mobile Number</label>
+                            <div className="flex items-stretch gap-0">
+                              <span className="inline-flex items-center justify-center px-4 text-sm font-semibold text-[var(--color-text-secondary)] bg-[var(--color-surface-2)] rounded-l-xl min-w-[56px]" style={{ border: '1.5px solid var(--color-border)', borderRight: 'none' }}>
+                                +91
+                              </span>
+                              <input type="tel" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="Enter 10-digit number" className="input-field flex-1 rounded-l-none" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }} maxLength={10} autoFocus />
+                            </div>
+                          </div>
+                          <button onClick={sendOTP} disabled={phone.length !== 10 || otpLoading} className="btn-primary w-full py-3">
+                            {otpLoading ? 'Sending...' : 'Send OTP'}
+                          </button>
+                        </div>
+                      ) : !phoneVerified ? (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 p-3 bg-[var(--color-primary-light)] rounded-xl text-sm text-[var(--color-primary-dark)]">
+                            <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
+                            OTP sent to +91 ****{phoneLast4}
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium mb-2 block">Enter 6-digit OTP</label>
+                            <input type="text" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="- - - - - -" className="input-field text-center text-2xl tracking-[0.5em]" style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.4em' }} maxLength={6} autoFocus />
+                          </div>
+                          <button onClick={verifyOTP} disabled={otp.length !== 6 || otpLoading} className="btn-primary w-full py-3">
+                            {otpLoading ? 'Verifying...' : 'Verify OTP'}
+                          </button>
+                          <button onClick={sendOTP} disabled={resendTimer > 0 || otpLoading} className="text-sm text-[var(--color-primary)] hover:underline disabled:text-[var(--color-text-muted)] w-full text-center">
+                            {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 p-3 bg-[var(--color-primary-light)] rounded-xl text-sm text-[var(--color-primary-dark)]">
+                          <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
+                          Phone verified: ****{phoneLast4}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Continue button */}
                   <button
                     onClick={() => setStep(2)}
-                    disabled={!agreedTC || !agreedDisclaimer}
+                    disabled={!canProceedStep1}
                     className="btn-primary w-full py-3.5"
                   >
-                    I Agree — Continue
+                    Continue
                     <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
                   </button>
                 </div>
               )}
 
-              {/* ===== STEP 2: Phone ===== */}
+              {/* ===== STEP 2: Name + Email ===== */}
               {step === 2 && (
-                <div className="animate-fade-in">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-light)] flex items-center justify-center flex-shrink-0">
-                      <FontAwesomeIcon icon={faLock} className="w-5 h-5 text-[var(--color-primary)]" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                        Verify Your Phone
-                      </h2>
-                      <p className="text-sm text-[var(--color-text-muted)]">
-                        Quick OTP verification to prevent fake complaints
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-4 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-border)] mb-6">
-                    <FontAwesomeIcon icon={faShieldHalved} className="w-4 h-4 text-[var(--color-text-muted)] mt-0.5 flex-shrink-0" />
-                    <p className="text-[13px] text-[var(--color-text-secondary)] leading-relaxed">
-                      Your phone number is never stored. It&apos;s hashed with SHA-256 immediately and the original is discarded. We cannot identify or contact you.
-                    </p>
-                  </div>
-
-                  {!otpSent ? (
-                    <div className="space-y-5">
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Mobile Number</label>
-                        <div className="flex items-stretch gap-0">
-                          <span
-                            className="inline-flex items-center justify-center px-4 text-sm font-semibold text-[var(--color-text-secondary)] bg-[var(--color-surface-2)] rounded-l-xl min-w-[56px]"
-                            style={{ border: '1.5px solid var(--color-border)', borderRight: 'none' }}
-                          >
-                            +91
-                          </span>
-                          <input
-                            type="tel"
-                            value={phone}
-                            onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                            placeholder="Enter 10-digit mobile number"
-                            className="input-field flex-1 rounded-l-none"
-                            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                            maxLength={10}
-                            autoFocus
-                          />
-                        </div>
-                        <p className="text-xs text-[var(--color-text-muted)] mt-1.5">
-                          We will send a 6-digit OTP to this number
-                        </p>
-                      </div>
-                      <button onClick={sendOTP} disabled={phone.length !== 10 || otpLoading} className="btn-primary w-full py-3.5">
-                        {otpLoading ? 'Sending...' : 'Send OTP'}
-                      </button>
-                      <button onClick={() => setStep(1)} className="btn-outline w-full py-3">
-                        <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" /> Back
-                      </button>
-                    </div>
-                  ) : !phoneVerified ? (
-                    <div className="space-y-5">
-                      <div className="flex items-center gap-2 p-3 bg-[var(--color-primary-light)] rounded-xl text-sm text-[var(--color-primary-dark)]">
-                        <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
-                        OTP sent to +91 ****{phoneLast4}
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Enter 6-digit OTP</label>
-                        <input
-                          type="text"
-                          value={otp}
-                          onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="- - - - - -"
-                          className="input-field text-center text-2xl tracking-[0.5em]"
-                          style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.4em' }}
-                          maxLength={6}
-                          autoFocus
-                        />
-                      </div>
-                      <button onClick={verifyOTP} disabled={otp.length !== 6 || otpLoading} className="btn-primary w-full py-3.5">
-                        {otpLoading ? 'Verifying...' : 'Verify OTP'}
-                      </button>
-                      <button onClick={sendOTP} disabled={resendTimer > 0 || otpLoading} className="text-sm text-[var(--color-primary)] hover:underline disabled:text-[var(--color-text-muted)] w-full text-center">
-                        {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-              )}
-
-              {/* ===== STEP 3: Name + Email ===== */}
-              {step === 3 && (
                 <div className="animate-fade-in">
                   <div className="flex items-center gap-3 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-light)] flex items-center justify-center flex-shrink-0">
@@ -667,10 +568,10 @@ export default function FileComplaintPage() {
                       </p>
                     </div>
                     <div className="flex gap-3 pt-2">
-                      <button onClick={() => setStep(2)} className="btn-outline py-3 px-6">
+                      <button onClick={() => setStep(1)} className="btn-outline py-3 px-6">
                         <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" /> Back
                       </button>
-                      <button onClick={() => setStep(4)} disabled={filerName.trim().length < 2 || !isValidEmail(filerEmail)} className="btn-primary flex-1 py-3.5">
+                      <button onClick={() => setStep(3)} disabled={filerName.trim().length < 2 || !isValidEmail(filerEmail)} className="btn-primary flex-1 py-3.5">
                         Continue <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -678,8 +579,8 @@ export default function FileComplaintPage() {
                 </div>
               )}
 
-              {/* ===== STEP 4: Complaint ===== */}
-              {step === 4 && (
+              {/* ===== STEP 3: Complaint + Proof (merged) ===== */}
+              {step === 3 && (
                 <div className="animate-fade-in">
                   <div className="flex items-center gap-3 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-light)] flex items-center justify-center flex-shrink-0">
@@ -687,7 +588,7 @@ export default function FileComplaintPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>Company & Complaint</h2>
-                      <p className="text-sm text-[var(--color-text-muted)]">Describe your experience clearly and factually</p>
+                      <p className="text-sm text-[var(--color-text-muted)]">Describe your experience and upload proof</p>
                     </div>
                   </div>
 
@@ -714,56 +615,39 @@ export default function FileComplaintPage() {
                         value={description}
                         onChange={e => setDescription(e.target.value)}
                         placeholder={"Describe what happened in detail.\n\nInclude:\n- Dates and timeline\n- Order or reference numbers\n- What you've tried so far\n- What resolution you expect"}
-                        className="input-field min-h-[180px] resize-y"
+                        className="input-field min-h-[160px] resize-y"
                         maxLength={5000}
                       />
                       <p className="text-xs text-[var(--color-text-muted)] mt-1.5 text-right">{description.length}/5000</p>
                     </div>
+
+                    {/* Proof upload — inline */}
+                    <div className="pt-4 border-t border-[var(--color-border)]">
+                      <div className="flex items-center gap-2 mb-3">
+                        <FontAwesomeIcon icon={faCamera} className="w-4 h-4 text-[var(--color-primary)]" />
+                        <label className="text-sm font-medium">Upload Proof *</label>
+                      </div>
+                      <div className="flex items-center gap-2 mb-4 p-3 rounded-xl text-[13px] text-[var(--color-amber)]" style={{ backgroundColor: 'var(--color-amber-light)' }}>
+                        <FontAwesomeIcon icon={faTriangleExclamation} className="w-3.5 h-3.5 flex-shrink-0" />
+                        Complaints with proof are 3x more likely to get a response
+                      </div>
+                      <ProofUploader sessionId={sessionId} files={proofFiles} onFilesChange={setProofFiles} />
+                    </div>
+
                     <div className="flex gap-3 pt-2">
-                      <button onClick={() => setStep(3)} className="btn-outline py-3 px-6">
+                      <button onClick={() => setStep(2)} className="btn-outline py-3 px-6">
                         <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" /> Back
                       </button>
-                      <button onClick={() => setStep(5)} disabled={!companyName.trim() || !category || title.trim().length < 10 || description.trim().length < 50} className="btn-primary flex-1 py-3.5">
-                        Continue <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
+                      <button onClick={() => setStep(4)} disabled={!companyName.trim() || !category || title.trim().length < 10 || description.trim().length < 50 || proofFiles.length === 0} className="btn-primary flex-1 py-3.5">
+                        Continue to Review <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* ===== STEP 5: Proof ===== */}
-              {step === 5 && (
-                <div className="animate-fade-in">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-light)] flex items-center justify-center flex-shrink-0">
-                      <FontAwesomeIcon icon={faCamera} className="w-5 h-5 text-[var(--color-primary)]" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>Upload Proof</h2>
-                      <p className="text-sm text-[var(--color-text-muted)]">At least one proof file is required</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-6 p-3.5 rounded-xl text-sm text-[var(--color-amber)]" style={{ backgroundColor: 'var(--color-amber-light)' }}>
-                    <FontAwesomeIcon icon={faTriangleExclamation} className="w-4 h-4 flex-shrink-0" />
-                    Complaints with proof are 3x more likely to get a response
-                  </div>
-
-                  <ProofUploader sessionId={sessionId} files={proofFiles} onFilesChange={setProofFiles} />
-
-                  <div className="flex gap-3 mt-6">
-                    <button onClick={() => setStep(4)} className="btn-outline py-3 px-6">
-                      <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" /> Back
-                    </button>
-                    <button onClick={() => setStep(6)} disabled={proofFiles.length === 0} className="btn-primary flex-1 py-3.5">
-                      Continue to Review <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* ===== STEP 6: Review ===== */}
-              {step === 6 && (
+              {/* ===== STEP 4: Review ===== */}
+              {step === 4 && (
                 <div className="animate-fade-in">
                   <div className="flex items-center gap-3 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-light)] flex items-center justify-center flex-shrink-0">
@@ -792,7 +676,7 @@ export default function FileComplaintPage() {
                   </div>
 
                   <div className="flex gap-3">
-                    <button onClick={() => setStep(5)} className="btn-outline py-3 px-6">
+                    <button onClick={() => setStep(3)} className="btn-outline py-3 px-6">
                       <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" /> Back
                     </button>
                     <button onClick={handleSubmit} disabled={submitting} className="btn-primary flex-1 py-3.5">

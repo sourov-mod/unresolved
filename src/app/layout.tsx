@@ -46,6 +46,28 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Unresolved',
+              url: 'https://unresolved.in',
+              description: "India's public consumer complaint registry. File complaints against companies, track them with a token, and hold companies accountable.",
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://unresolved.in/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string',
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'Unresolved',
+                url: 'https://unresolved.in',
+              },
+            }),
+          }}
+        />
         <Toaster
           position="top-center"
           toastOptions={{

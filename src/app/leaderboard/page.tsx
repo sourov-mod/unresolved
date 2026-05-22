@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import RankBadge from '@/components/ui/RankBadge';
-import { createAnonServerClient } from '@/lib/supabase/server';
+import { createAnonServerClient, isSupabaseConfigured } from '@/lib/supabase/server';
 import Link from 'next/link';
 import type { Company } from '@/types';
 import type { Metadata } from 'next';
@@ -17,26 +17,43 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 export const revalidate = 1800;
 
+async function fetchRankings(): Promise<{ worstCompanies: Company[]; bestCompanies: Company[] }> {
+  if (!isSupabaseConfigured()) {
+    return { worstCompanies: [], bestCompanies: [] };
+  }
+
+  try {
+    const supabase = createAnonServerClient();
+
+    const [worstResult, bestResult] = await Promise.all([
+      supabase
+        .from('companies')
+        .select('*')
+        .gt('total_complaints', 0)
+        .lt('score', 60)
+        .order('score', { ascending: true })
+        .limit(20),
+      supabase
+        .from('companies')
+        .select('*')
+        .gt('total_complaints', 0)
+        .gte('score', 40)
+        .order('score', { ascending: false })
+        .limit(20),
+    ]);
+
+    return {
+      worstCompanies: worstResult.data || [],
+      bestCompanies: bestResult.data || [],
+    };
+  } catch (error) {
+    console.error('Failed to fetch rankings:', error);
+    return { worstCompanies: [], bestCompanies: [] };
+  }
+}
+
 export default async function LeaderboardPage() {
-  const supabase = createAnonServerClient();
-
-  const { data: worstCompanies } = await supabase
-    .from('companies')
-    .select('*')
-    .gt('total_complaints', 0)
-    .lt('score', 60)
-    .order('score', { ascending: true })
-    .limit(20);
-
-  const { data: bestCompanies } = await supabase
-    .from('companies')
-    .select('*')
-    .gt('total_complaints', 0)
-    .gte('score', 40)
-    .order('score', { ascending: false })
-    .limit(20);
-
-  // No medals — just plain rank numbers
+  const { worstCompanies, bestCompanies } = await fetchRankings();
 
   return (
     <>
@@ -45,11 +62,15 @@ export default async function LeaderboardPage() {
         <div className="container-page py-12">
           {/* Hero */}
           <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold mb-4">
+              <FontAwesomeIcon icon={faTriangleExclamation} className="w-3 h-3" />
+              Rankings are algorithmic, not editorial
+            </div>
             <h1
               className="text-4xl md:text-6xl lg:text-[72px] font-extrabold mb-4"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              COMPANY SCOREBOARD
+              Company Accountability Rankings
             </h1>
             <p className="text-[var(--color-text-secondary)] max-w-xl mx-auto">
               Ranked by resolution rate, response time, and public complaints.
@@ -71,7 +92,7 @@ export default async function LeaderboardPage() {
             <p className="text-sm text-[var(--color-text-muted)] mb-6">
               Companies with the most complaints and lowest resolution rates.
             </p>
-            <CompanyTable companies={worstCompanies || []} type="shame" />
+            <CompanyTable companies={worstCompanies} type="shame" />
           </section>
 
           {/* Best performing */}
@@ -88,13 +109,13 @@ export default async function LeaderboardPage() {
             <p className="text-sm text-[var(--color-text-muted)] mb-6">
               Companies with the best resolution rates and consumer responsiveness.
             </p>
-            <CompanyTable companies={bestCompanies || []} type="best" />
+            <CompanyTable companies={bestCompanies} type="best" />
           </section>
 
           {/* How calculated */}
           <details className="card p-6">
             <summary className="cursor-pointer text-sm font-semibold text-[var(--color-text-primary)]">
-              <FontAwesomeIcon icon={faChartBar} className="w-4 h-4 mr-1.5" /> How is this calculated?
+              <FontAwesomeIcon icon={faChartBar} className="w-4 h-4 mr-1.5" /> How is this score calculated?
             </summary>
             <div className="mt-4 text-sm text-[var(--color-text-secondary)] space-y-2">
               <p>Every company is scored on a 0–100 scale based on:</p>
@@ -125,8 +146,19 @@ function CompanyTable({
 }) {
   if (companies.length === 0) {
     return (
-      <div className="card p-8 text-center text-[var(--color-text-muted)]">
-        No company data yet. Be the first to file a complaint!
+      <div className="card p-12 text-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--color-surface-2)] flex items-center justify-center">
+          <FontAwesomeIcon icon={faChartBar} className="w-7 h-7 text-[var(--color-text-muted)]" />
+        </div>
+        <p className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+          No rankings yet
+        </p>
+        <p className="text-sm text-[var(--color-text-muted)] mb-6">
+          Be the first to file a complaint and hold companies accountable.
+        </p>
+        <Link href="/file-complaint" className="btn-primary py-3 px-6">
+          File a Complaint
+        </Link>
       </div>
     );
   }
@@ -176,7 +208,13 @@ function CompanyTable({
                   {c.total_complaints}
                 </td>
                 <td className="py-3 px-4 text-right font-mono hidden sm:table-cell">
-                  {resRate}%
+                  <span className={
+                    resRate >= 60 ? 'text-[var(--rank-best)]' :
+                    resRate >= 30 ? 'text-[var(--rank-average)]' :
+                    'text-[var(--rank-worst)]'
+                  }>
+                    {resRate}%
+                  </span>
                 </td>
                 <td className="py-3 px-4 text-right font-mono font-semibold">
                   {c.score}

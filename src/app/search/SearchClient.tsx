@@ -59,50 +59,48 @@ export default function SearchClient() {
 
   return (
     <div>
-      {/* Interactive search bar — replaces the static shell */}
-      <div className="-mt-[calc(2.5rem+4rem+1.5rem+52px+8px+6px)]">
-        <div className="flex gap-2 mb-4">
-          <div className="relative flex-1">
-            <FontAwesomeIcon
-              icon={faMagnifyingGlass}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]"
-            />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search companies or complaints..."
-              className="input-field pl-12"
-              style={{ height: '52px', fontSize: '16px', borderWidth: '2px', borderRadius: '10px' }}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              aria-label="Search complaints"
-            />
-          </div>
-          <button onClick={handleSearch} className="btn-primary px-6" disabled={loading}>
-            {loading ? (
-              <FontAwesomeIcon icon={faSpinner} className="w-5 h-5 animate-spin" />
-            ) : (
-              'Search'
-            )}
-          </button>
+      {/* Search bar */}
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1">
+          <FontAwesomeIcon
+            icon={faMagnifyingGlass}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] z-10"
+          />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search companies or complaints..."
+            className="input-field"
+            style={{ height: '52px', fontSize: '16px', borderWidth: '2px', borderRadius: '10px', paddingLeft: '48px' }}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            aria-label="Search complaints"
+          />
         </div>
+        <button onClick={handleSearch} className="btn-primary px-6" disabled={loading}>
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} className="w-5 h-5 animate-spin" />
+          ) : (
+            'Search'
+          )}
+        </button>
+      </div>
 
-        {/* Interactive filter chips */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {FILTER_CHIPS.map((chip) => (
-            <button
-              key={chip.slug}
-              onClick={() => setActiveFilter(chip.slug)}
-              className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeFilter === chip.slug
-                  ? 'bg-[var(--color-primary-light)] border-[var(--color-primary)] text-[var(--color-primary-dark)]'
-                  : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary-dark)]'
-              }`}
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
+      {/* Filter chips */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {FILTER_CHIPS.map((chip) => (
+          <button
+            key={chip.slug}
+            onClick={() => setActiveFilter(chip.slug)}
+            className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+              activeFilter === chip.slug
+                ? 'bg-[var(--color-primary-light)] border-[var(--color-primary)] text-[var(--color-primary-dark)]'
+                : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary-dark)]'
+            }`}
+          >
+            {chip.label}
+          </button>
+        ))}
       </div>
 
       {/* Loading state */}

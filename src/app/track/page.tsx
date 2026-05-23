@@ -12,8 +12,28 @@ export default function TrackLandingPage() {
   const [token, setToken] = useState('');
   const router = useRouter();
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.toUpperCase();
+    const clean = raw.replace(/[^A-Z0-9]/g, '').slice(0, 16);
+    const isDeleting = raw.length < token.length;
+
+    // Build formatted string with dashes at positions 3 and 7
+    let formatted = '';
+    for (let i = 0; i < clean.length; i++) {
+      if (i === 3 || i === 7) formatted += '-';
+      formatted += clean[i];
+    }
+
+    // Auto-append dash immediately after 3rd or 7th character (only when typing, not deleting)
+    if (!isDeleting && (clean.length === 3 || clean.length === 7)) {
+      formatted += '-';
+    }
+
+    setToken(formatted);
+  };
+
   const handleTrack = () => {
-    const clean = token.trim().toUpperCase();
+    const clean = token.trim();
     if (clean) router.push(`/track/${clean}`);
   };
 
@@ -22,9 +42,7 @@ export default function TrackLandingPage() {
       <Header />
       <main className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
         <div className="container-page max-w-xl text-center py-20">
-          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[var(--color-primary-light)] flex items-center justify-center">
-            <FontAwesomeIcon icon={faMagnifyingGlass} className="w-7 h-7 text-[var(--color-primary)]" />
-          </div>
+
           <h1
             className="text-3xl md:text-5xl font-bold mb-4"
             style={{ fontFamily: 'var(--font-display)' }}
@@ -37,13 +55,12 @@ export default function TrackLandingPage() {
 
           <div className="flex gap-2 max-w-md mx-auto mb-3">
             <div className="relative flex-1">
-              <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
               <input
                 type="text"
                 value={token}
-                onChange={e => setToken(e.target.value.toUpperCase())}
+                onChange={handleChange}
                 placeholder="UNR-2026-XXXXXX"
-                className="input-field pl-12 uppercase"
+                className="input-field uppercase text-center"
                 style={{
                   fontFamily: 'var(--font-mono)',
                   letterSpacing: '0.05em',

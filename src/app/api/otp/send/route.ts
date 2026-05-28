@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { sendOTP, validateIndianPhone } from '@/lib/otp';
+import { checkOTPSendLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 OTP requests per IP per 15 minutes
+    const rl = await checkOTPSendLimit(request);
+    if (rl.limited) return rl.response!;
+
     const { phone } = await request.json();
 
     // Validate phone

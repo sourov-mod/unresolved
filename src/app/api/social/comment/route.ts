@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkCommentLimit } from '@/lib/rate-limit';
 
 // In-memory store for demo — in production use Redis/Supabase
 const comments = new Map<string, { text: string; fingerprint: string; timestamp: number }[]>();
@@ -6,6 +7,10 @@ const dailyLimits = new Map<string, number>(); // fp -> last comment timestamp
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 comments per IP per hour
+    const rl = await checkCommentLimit(request);
+    if (rl.limited) return rl.response!;
+
     const { post_id, text, fingerprint } = await request.json();
 
     if (!post_id || !text || !fingerprint) {

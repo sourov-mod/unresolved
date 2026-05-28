@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { sha256 } from '@/lib/utils';
 import { recalculateCompanyStats } from '@/lib/ranking';
+import { checkUpvoteLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 30 upvotes per IP per hour
+    const rl = await checkUpvoteLimit(request);
+    if (rl.limited) return rl.response!;
+
     const { complaint_id, fingerprint } = await request.json();
 
     if (!complaint_id || !fingerprint) {

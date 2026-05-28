@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAnonServerClient } from '@/lib/supabase/server';
+import { checkSearchLimit } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
+  // Rate limit: 30 searches per IP per minute
+  const rl = await checkSearchLimit(request);
+  if (rl.limited) return rl.response!;
+
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q')?.trim();
 

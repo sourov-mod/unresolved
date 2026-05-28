@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const { secret } = await request.json();
+  const { password } = await request.json();
 
-  if (secret === process.env.ADMIN_SECRET) {
+  if (password === process.env.ADMIN_SECRET) {
     return NextResponse.json({ authenticated: true });
   }
 

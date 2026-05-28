@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
+import { checkOTPVerifyLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 10 verify attempts per IP per 15 minutes
+    const rl = await checkOTPVerifyLimit(request);
+    if (rl.limited) return rl.response!;
+
     const { session_id, otp_code } = await request.json();
 
     if (!session_id || !otp_code) {

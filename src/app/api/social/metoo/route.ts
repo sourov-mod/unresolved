@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkMeTooLimit } from '@/lib/rate-limit';
 
 // In-memory store for demo — in production use Redis/Supabase
 const votes = new Map<string, Set<string>>();
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 20 me-too votes per IP per hour
+    const rl = await checkMeTooLimit(request);
+    if (rl.limited) return rl.response!;
+
     const { post_id, fingerprint } = await request.json();
 
     if (!post_id || !fingerprint) {

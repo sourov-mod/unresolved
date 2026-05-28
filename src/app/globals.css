@@ -468,6 +468,15 @@ code, pre, .font-mono {
   background: var(--color-text-muted);
 }
 
+/* Hide scrollbar on specific elements */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ===== SELECTION ===== */
 
 ::selection {

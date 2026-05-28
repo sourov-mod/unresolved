@@ -6,9 +6,14 @@ import { checkForSpam } from '@/lib/spam-detection';
 import { calculateScore, getLabel, recalculateCompanyStats } from '@/lib/ranking';
 import { slugify } from '@/lib/utils';
 import { COMPLAINT_CATEGORIES } from '@/types';
+import { checkSubmitLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 3 complaint submissions per IP per hour
+    const rl = await checkSubmitLimit(request);
+    if (rl.limited) return rl.response!;
+
     const body = await request.json();
     const {
       otp_session_id,

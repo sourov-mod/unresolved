@@ -2,12 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import SocialComplaintCard from '@/components/ui/SocialComplaintCard';
 import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter';
 import FAQAccordion from '@/components/ui/FAQAccordion';
 import RecentComplaints from '@/components/ui/RecentComplaints';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import { SOCIAL_COMPLAINTS } from '@/lib/social-data';
+import HorizontalSocialScroll from '@/components/ui/HorizontalSocialScroll';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileAlt, faMagnifyingGlass, faArrowRight, faShield, faCamera, faHashtag,
@@ -17,7 +16,6 @@ import {
   faLock, faEye, faQuestionCircle,
   faScaleBalanced, faBookOpen, faFlag,
 } from '@fortawesome/free-solid-svg-icons';
-import { faXTwitter, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 const CATEGORIES: { icon: IconDefinition; label: string; slug: string; color: string; count: string }[] = [
@@ -161,40 +159,8 @@ export default function HomePage() {
           </section>
         </ScrollReveal>
 
-        {/* ===== SOCIAL WALL ===== */}
-        <ScrollReveal>
-          <section className="container-page py-20">
-            <div className="text-center mb-4">
-              <div className="inline-flex items-center gap-3 mb-3">
-                <FontAwesomeIcon icon={faXTwitter} className="w-5 h-5" />
-                <FontAwesomeIcon icon={faFacebook} className="w-5 h-5 text-[#1877F2]" />
-                <FontAwesomeIcon icon={faInstagram} className="w-5 h-5 text-[#E4405F]" />
-              </div>
-              <h2
-                className="text-3xl md:text-4xl font-bold mb-4"
-                style={{ fontFamily: 'var(--font-display)' }}
-              >
-                What People Are Saying
-              </h2>
-              <p className="text-[var(--color-text-secondary)] max-w-xl mx-auto mb-12">
-                Real complaints from consumers across social media. These are the issues that remain unresolved.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-start card-grid">
-              {SOCIAL_COMPLAINTS.slice(0, 9).map(post => (
-                <SocialComplaintCard key={post.id} post={post} />
-              ))}
-            </div>
-
-            <div className="text-center mt-10">
-              <Link href="/social" className="btn-outline py-3 px-8">
-                View All Social Complaints
-                <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </section>
-        </ScrollReveal>
+        {/* ===== SOCIAL WALL — HORIZONTAL SCROLL ===== */}
+        <HorizontalSocialScroll />
 
         {/* ===== HOW IT WORKS ===== */}
         <ScrollReveal>
@@ -334,6 +300,46 @@ export default function HomePage() {
           </section>
         </ScrollReveal>
 
+        {/* ===== HOW PEOPLE FEEL ===== */}
+        <ScrollReveal>
+          <section className="py-20" style={{ background: 'var(--color-navy)' }}>
+            <div className="container-page">
+              <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+                How People Feel When This Happens
+              </h2>
+              <p className="text-center text-gray-400 mb-14 max-w-lg mx-auto">
+                Behind every unresolved complaint is a real person. These are their words.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  { quote: 'I felt completely helpless. No one was listening, and the company just kept passing me around.', emotion: 'Helpless', color: '#EF4444' },
+                  { quote: 'It is not about the money anymore. It is the disrespect. They treat you like you do not matter.', emotion: 'Disrespected', color: '#F59E0B' },
+                  { quote: 'I wasted 3 weeks calling the same number. Every time, I had to explain everything from scratch.', emotion: 'Exhausted', color: '#8B5CF6' },
+                  { quote: 'They promised a callback in 24 hours. That was 2 months ago. Still waiting.', emotion: 'Ignored', color: '#3B82F6' },
+                  { quote: 'My elderly mother could not access her pension for weeks. The anxiety was unbearable for our family.', emotion: 'Anxious', color: '#EC4899' },
+                  { quote: 'I felt like the system is designed to make you give up. That is exactly what they want.', emotion: 'Defeated', color: '#F97316' },
+                ].map((item) => (
+                  <div
+                    key={item.emotion}
+                    className="rounded-2xl p-6 relative overflow-hidden"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderLeft: `3px solid ${item.color}` }}
+                  >
+                    <span
+                      className="text-[11px] font-bold uppercase tracking-widest mb-3 inline-block"
+                      style={{ color: item.color }}
+                    >
+                      {item.emotion}
+                    </span>
+                    <p className="text-sm text-gray-300 leading-relaxed italic">
+                      &ldquo;{item.quote}&rdquo;
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </ScrollReveal>
+
         {/* ===== FAQ ===== */}
         <ScrollReveal>
           <section className="bg-[var(--color-surface-2)] py-20">
@@ -354,26 +360,6 @@ export default function HomePage() {
             </div>
           </section>
         </ScrollReveal>
-
-        {/* ===== CTA BANNER ===== */}
-        <section className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] py-16">
-          <div className="container-page text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-              Have an Unresolved Issue?
-            </h2>
-            <p className="text-green-100 mb-8 max-w-lg mx-auto">
-              Document it transparently. We&apos;ll track it for you and notify you of any updates.
-            </p>
-            <Link
-              href="/file-complaint"
-              className="inline-flex items-center gap-2 bg-white text-[var(--color-primary-dark)] font-bold py-3.5 px-8 rounded-xl hover:bg-gray-50 transition-all hover:scale-[1.02]"
-            >
-              <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4" />
-              File a Complaint
-              <FontAwesomeIcon icon={faArrowRight} className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </section>
       </main>
       <Footer />
     </>

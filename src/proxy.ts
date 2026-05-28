@@ -9,7 +9,7 @@ export function proxy(request: NextRequest) {
     // This middleware just ensures the cookie exists for API calls
   }
 
-  // Rate limit headers (actual rate limiting done per-route via Upstash)
+  // Rate limiting is handled per-route via Upstash Redis (@/lib/rate-limit)
   const response = NextResponse.next();
 
   // Security headers

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generatePresignedUploadUrl, getPublicUrl } from '@/lib/r2';
 import { createServerClient } from '@/lib/supabase/server';
+import { checkUploadLimit } from '@/lib/rate-limit';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -13,6 +14,10 @@ const EXT_MAP: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 15 upload requests per IP per 15 minutes
+    const rl = await checkUploadLimit(request);
+    if (rl.limited) return rl.response!;
+
     const { session_id, content_type, file_name, file_size } = await request.json();
 
     // 1. Auth check: valid OTP session required
